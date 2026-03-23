@@ -14,7 +14,7 @@ Instead of Python code orchestrating LLM calls via LangChain:
 |---|---|
 | LangGraph `StateGraph` | `.github/copilot-instructions.md` orchestration |
 | LangChain `@tool` decorators | MCP server tools (`mcp/`) |
-| Agent Python classes | Skill markdown files (`skills/`) |
+| Agent Python classes | Sub-agent definitions (`.claude/agents/`) |
 | `bind_tools()` + `ToolNode` | Native Copilot MCP tool invocation |
 | `MessagesState` | Copilot conversation context |
 | `BM25Okapi` memory | Copilot's built-in context window |
@@ -107,22 +107,22 @@ Copilot will automatically run the full 4-phase pipeline using the skills and MC
 
 ---
 
-## Skills Reference
+## Sub-Agents Reference
 
 | File | Phase | Role |
 |------|-------|------|
-| `skills/market-analyst.md` | Phase 1 | Technical indicators analysis |
-| `skills/sentiment-analyst.md` | Phase 1 | Social media & news sentiment |
-| `skills/news-analyst.md` | Phase 1 | Global macro news analysis |
-| `skills/fundamentals-analyst.md` | Phase 1 | Financial statements analysis |
-| `skills/bull-researcher.md` | Phase 2 | Argues the bullish case |
-| `skills/bear-researcher.md` | Phase 2 | Argues the bearish case |
-| `skills/research-manager.md` | Phase 2 | Judges debate → investment plan |
-| `skills/trader.md` | Phase 3 | Final BUY/HOLD/SELL decision |
-| `skills/aggressive-analyst.md` | Phase 4 | Champions high-risk/high-reward |
-| `skills/conservative-analyst.md` | Phase 4 | Champions capital preservation |
-| `skills/neutral-analyst.md` | Phase 4 | Balanced risk/reward perspective |
-| `skills/portfolio-manager.md` | Phase 4 | Final 5-tier rating decision |
+| `.claude/agents/market-analyst.md` | Phase 1 | Technical indicators analysis |
+| `.claude/agents/sentiment-analyst.md` | Phase 1 | Social media & news sentiment |
+| `.claude/agents/news-analyst.md` | Phase 1 | Global macro news analysis |
+| `.claude/agents/fundamentals-analyst.md` | Phase 1 | Financial statements analysis |
+| `.claude/agents/bull-researcher.md` | Phase 2 | Argues the bullish case |
+| `.claude/agents/bear-researcher.md` | Phase 2 | Argues the bearish case |
+| `.claude/agents/research-manager.md` | Phase 2 | Judges debate → investment plan |
+| `.claude/agents/trader.md` | Phase 3 | Final BUY/HOLD/SELL decision |
+| `.claude/agents/aggressive-analyst.md` | Phase 4 | Champions high-risk/high-reward |
+| `.claude/agents/conservative-analyst.md` | Phase 4 | Champions capital preservation |
+| `.claude/agents/neutral-analyst.md` | Phase 4 | Balanced risk/reward perspective |
+| `.claude/agents/portfolio-manager.md` | Phase 4 | Final 5-tier rating decision |
 
 ---
 
@@ -175,7 +175,7 @@ Always preserve the exchange suffix in your query.
 
 **Swap data vendor:** Set `ALPHA_VANTAGE_API_KEY` in your `.env` — the MCP servers automatically prefer Alpha Vantage when the key is present, falling back to yfinance.
 
-**Add a new analyst:** Create a new skill file in `skills/` and add it to the pipeline in `.github/copilot-instructions.md`.
+**Add a new analyst:** Create a new sub-agent file in `.claude/agents/` and add it to the pipeline in `.github/copilot-instructions.md`.
 
 ---
 
