@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "trading-market-data": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/mcp/market-data-server.py"],
+      "env": {
+        "ALPHA_VANTAGE_API_KEY": "${env:ALPHA_VANTAGE_API_KEY}"
+      }
+    },
+    "trading-news-data": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/mcp/news-data-server.py"],
+      "env": {
+        "ALPHA_VANTAGE_API_KEY": "${env:ALPHA_VANTAGE_API_KEY}"
+      }
+    }
+  }
+}
