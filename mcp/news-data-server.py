@@ -72,35 +72,60 @@ def get_news(ticker: str, start_date: str, end_date: str) -> str:
     return _get_news_yfinance(ticker, start_date, end_date)
 
 
+def _normalize_article(item: dict) -> dict:
+    """Normalize yfinance news article across old and new API schemas."""
+    # New schema: item["content"] holds the data
+    if "content" in item and isinstance(item["content"], dict):
+        c = item["content"]
+        pub_str = c.get("pubDate") or c.get("displayTime", "")
+        try:
+            from datetime import datetime as dt
+            pub_ts = int(dt.strptime(pub_str[:19], "%Y-%m-%dT%H:%M:%S").timestamp()) if pub_str else 0
+        except Exception:
+            pub_ts = 0
+        provider = c.get("provider", {})
+        return {
+            "title": c.get("title", ""),
+            "summary": c.get("summary", "") or c.get("description", ""),
+            "publisher": provider.get("displayName", "") if isinstance(provider, dict) else str(provider),
+            "link": (c.get("canonicalUrl") or {}).get("url", ""),
+            "providerPublishTime": pub_ts,
+        }
+    # Old schema: flat dict
+    return {
+        "title": item.get("title", ""),
+        "summary": item.get("summary", "") or item.get("description", ""),
+        "publisher": item.get("publisher", ""),
+        "link": item.get("link", ""),
+        "providerPublishTime": item.get("providerPublishTime", 0),
+    }
+
+
 def _get_news_yfinance(ticker: str, start_date: str, end_date: str) -> str:
     try:
         t = yf.Ticker(ticker)
-        news = t.news
-        if not news:
+        raw_news = t.news
+        if not raw_news:
             return f"No news found for {ticker}."
+
+        news = [_normalize_article(item) for item in raw_news]
+        news = [a for a in news if a["title"]]  # drop empty titles
 
         start_ts = datetime.strptime(start_date, "%Y-%m-%d").timestamp()
         end_ts = datetime.strptime(end_date, "%Y-%m-%d").timestamp() + 86400
 
-        articles = []
-        for item in news:
-            pub_ts = item.get("providerPublishTime", 0)
-            if start_ts <= pub_ts <= end_ts:
-                articles.append(item)
-
+        articles = [a for a in news if start_ts <= a["providerPublishTime"] <= end_ts]
         if not articles:
-            # Fall back to most recent 10 articles if date filter yields nothing
-            articles = news[:10]
+            articles = news[:10]  # fall back to most recent
 
         lines = [f"News for {ticker} ({start_date} to {end_date})", "=" * 60]
         for a in articles:
-            ts = datetime.fromtimestamp(a.get("providerPublishTime", 0)).strftime("%Y-%m-%d %H:%M")
-            lines.append(f"\n[{ts}] {a.get('title', 'No title')}")
-            lines.append(f"Source: {a.get('publisher', 'Unknown')}")
-            lines.append(f"URL: {a.get('link', '')}")
-            summary = a.get("summary", "") or a.get("description", "")
-            if summary:
-                lines.append(f"Summary: {summary[:300]}")
+            ts = datetime.fromtimestamp(a["providerPublishTime"]).strftime("%Y-%m-%d %H:%M") if a["providerPublishTime"] else "unknown date"
+            lines.append(f"\n[{ts}] {a['title']}")
+            lines.append(f"Source: {a['publisher']}")
+            lines.append(f"URL: {a['link']}")
+            if a["summary"]:
+                lines.append(f"Summary: {a['summary'][:300]}")
 
         return "\n".join(lines)
     except Exception as e:
@@ -147,11 +172,12 @@ def get_global_news(curr_date: str, look_back_days: int = 7, limit: int = 10) ->
 
 
 def _get_global_news_yfinance(curr_date: str, look_back_days: int, limit: int) -> str:
-    """Proxy global news via a basket of macro ETFs and indices."""
-    macro_tickers = ["SPY", "TLT", "GLD", "DXY", "^VIX"]
+    """Proxy global news via a basket of macro ETFs and solar sector."""
+    macro_tickers = ["SPY", "TLT", "GLD", "FSLR", "ENPH"]
     end_dt = datetime.strptime(curr_date, "%Y-%m-%d")
     start_dt = end_dt - timedelta(days=look_back_days)
-    start_date = start_dt.strftime("%Y-%m-%d")
+    start_ts = start_dt.timestamp()
+    end_ts = end_dt.timestamp() + 86400
 
     all_articles = []
     seen_titles = set()
@@ -159,24 +185,26 @@ def _get_global_news_yfinance(curr_date: str, look_back_days: int, limit: int) -
         try:
             t = yf.Ticker(sym)
             for item in (t.news or []):
-                title = item.get("title", "")
-                if title not in seen_titles:
-                    seen_titles.add(title)
-                    all_articles.append(item)
+                a = _normalize_article(item)
+                if a["title"] and a["title"] not in seen_titles:
+                    seen_titles.add(a["title"])
+                    all_articles.append(a)
         except Exception:
             continue
 
-    all_articles.sort(key=lambda x: x.get("providerPublishTime", 0), reverse=True)
+    all_articles.sort(key=lambda x: x["providerPublishTime"], reverse=True)
+    dated = [a for a in all_articles if start_ts <= a["providerPublishTime"] <= end_ts]
+    if not dated:
+        dated = all_articles
 
-    lines = [f"Global Macro News (last {look_back_days} days, as of {curr_date})", "=" * 60]
-    for a in all_articles[:limit]:
-        ts = datetime.fromtimestamp(a.get("providerPublishTime", 0)).strftime("%Y-%m-%d %H:%M")
-        lines.append(f"\n[{ts}] {a.get('title', 'No title')}")
-        lines.append(f"Source: {a.get('publisher', 'Unknown')}")
-        lines.append(f"URL: {a.get('link', '')}")
-        summary = a.get("summary", "") or a.get("description", "")
-        if summary:
-            lines.append(f"Summary: {summary[:300]}")
+    lines = [f"Global Macro & Solar Sector News (last {look_back_days} days, as of {curr_date})", "=" * 60]
+    for a in dated[:limit]:
+        ts = datetime.fromtimestamp(a["providerPublishTime"]).strftime("%Y-%m-%d %H:%M") if a["providerPublishTime"] else "unknown"
+        lines.append(f"\n[{ts}] {a['title']}")
+        lines.append(f"Source: {a['publisher']}")
+        lines.append(f"URL: {a['link']}")
+        if a["summary"]:
+            lines.append(f"Summary: {a['summary'][:300]}")
 
     return "\n".join(lines)
 
