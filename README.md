@@ -6,21 +6,6 @@ A multi-agent AI trading analysis system reimplemented as **GitHub Copilot instr
 
 ---
 
-## Architecture
-
-Instead of Python code orchestrating LLM calls via LangChain:
-
-| Original (LangChain) | This Plugin (Copilot) |
-|---|---|
-| LangGraph `StateGraph` | `.github/copilot-instructions.md` orchestration |
-| LangChain `@tool` decorators | MCP server tools (`mcp/`) |
-| Agent Python classes | Sub-agent definitions (`.claude/agents/`) |
-| `bind_tools()` + `ToolNode` | Native Copilot MCP tool invocation |
-| `MessagesState` | Copilot conversation context |
-| `BM25Okapi` memory | Copilot's built-in context window |
-
----
-
 ## Pipeline
 
 ```
