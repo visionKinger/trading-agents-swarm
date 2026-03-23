@@ -1,3 +1,7 @@
+---
+name: market-analyst
+description: Market Analyst
+---
 # Skill: Market Analyst
 
 ## Role

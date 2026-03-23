@@ -141,6 +141,36 @@ Present results to the user in this structure:
 
 ---
 
+## Phase 5: DOCX Report Generation (MANDATORY)
+
+**After presenting the final output to the user, ALWAYS generate a Word document report.**
+
+Invoke the `docx` skill to create a professional `.docx` report saved to the current working directory.
+
+**File naming:** `{TICKER}_analysis_{TRADE_DATE}.docx` (e.g. `NKE_analysis_2026-03-23.docx`)
+
+**The report must include all of the following sections, formatted professionally:**
+
+1. **Cover Page** — Ticker, company name, trade date, final decision (Buy/Overweight/Hold/Underweight/Sell), and current price
+2. **Executive Summary** — Final decision, entry strategy, stop-loss, targets, time horizon (1 page)
+3. **Phase 1: Analyst Reports** — Full market, sentiment, news, and fundamentals reports
+4. **Phase 2: Investment Debate** — Bull case (all rounds), bear case (all rounds), research manager verdict
+5. **Phase 3: Trader Decision** — Full trader execution plan including entry, stop, targets
+6. **Phase 4: Risk Assessment** — Aggressive, conservative, and neutral analyst views (all rounds), portfolio manager final decision
+7. **Appendix: Key Data Table** — Price, RSI, MACD, SMA levels, P/E, P/S, EPS growth, dividend yield, analyst consensus
+
+**Formatting requirements:**
+- Use professional heading styles (Heading 1 for phases, Heading 2 for sub-sections)
+- Include a table of contents after the cover page
+- Use tables for key metrics and indicator data
+- Use colored text or bold for BUY (green), SELL (red), HOLD (orange) decisions
+- Page numbers in footer
+- Date and ticker in header
+
+After generating the file, confirm to the user: `✅ Report saved: {filename}`
+
+---
+
 ## MCP Tools Available
 
 All market data is fetched via MCP servers. Tools available:

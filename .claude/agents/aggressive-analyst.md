@@ -1,3 +1,7 @@
+---
+name: aggressive-analyst
+description: Aggressive Risk Analyst
+---
 # Skill: Aggressive Risk Analyst
 
 ## Role

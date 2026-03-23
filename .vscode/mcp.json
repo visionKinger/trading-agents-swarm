@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "trading-market-data": {
+      "type": "stdio",
       "command": "python3",
       "args": ["${workspaceFolder}/mcp/market-data-server.py"],
       "env": {
@@ -8,6 +9,7 @@
       }
     },
     "trading-news-data": {
+      "type": "stdio",
       "command": "python3",
       "args": ["${workspaceFolder}/mcp/news-data-server.py"],
       "env": {

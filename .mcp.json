@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "trading-market-data": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["/Volumes/walterGenai/Genai/trading-agents-copilot/mcp/market-data-server.py"]
+    },
+    "trading-news-data": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["/Volumes/walterGenai/Genai/trading-agents-copilot/mcp/news-data-server.py"]
+    }
+  }
+}
