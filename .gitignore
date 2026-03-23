@@ -9,3 +9,7 @@ dist/
 build/
 .venv/
 venv/
+
+# Analysis reports - local only, do not commit
+*_analysis_*.docx
+*_analysis_*.pptx

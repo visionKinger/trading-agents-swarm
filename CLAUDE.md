@@ -169,6 +169,8 @@ Invoke the `docx` skill to create a professional `.docx` report saved to the cur
 
 After generating the file, confirm to the user: `✅ Report saved: {filename}`
 
+**IMPORTANT — Do NOT push report files to GitHub.** The `.docx` report is saved locally only. Do not commit or push `*_analysis_*.docx` files to the repository.
+
 ---
 
 ## MCP Tools Available

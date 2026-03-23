@@ -142,6 +142,8 @@ FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL**
 
 After saving, confirm: `✅ Report saved: {filename}`
 
+**IMPORTANT — Do NOT push report files to GitHub.** The `.docx` report is saved locally only. Do not commit or push `*_analysis_*.docx` files to the repository.
+
 ---
 
 ## MCP Tools Reference
