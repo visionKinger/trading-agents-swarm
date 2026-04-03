@@ -3,12 +3,18 @@
     "trading-market-data": {
       "type": "stdio",
       "command": "python3",
-      "args": ["/Volumes/walterGenai/Genai/trading-agents-copilot/mcp/market-data-server.py"]
+      "args": ["mcp/market-data-server.py"],
+      "env": {
+        "ALPHA_VANTAGE_API_KEY": "${env:ALPHA_VANTAGE_API_KEY}"
+      }
     },
     "trading-news-data": {
       "type": "stdio",
       "command": "python3",
-      "args": ["/Volumes/walterGenai/Genai/trading-agents-copilot/mcp/news-data-server.py"]
+      "args": ["mcp/news-data-server.py"],
+      "env": {
+        "ALPHA_VANTAGE_API_KEY": "${env:ALPHA_VANTAGE_API_KEY}"
+      }
     }
   }
 }
