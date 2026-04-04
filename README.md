@@ -1,8 +1,8 @@
-# Trading Agents — Copilot Plugin
+# Trading Agents Swarm
 
-A multi-agent AI trading analysis system reimplemented as **GitHub Copilot instruction files, skills, and MCP tools** — no LangChain, no LangGraph, no orchestration framework required.
+A multi-agent AI trading analysis system built as **native instruction files and MCP tools** — no LangChain, no LangGraph, no orchestration framework required. Runs natively inside **GitHub Copilot**, **Claude Code**, and **OpenAI Codex**.
 
-> This is a clean-room reimplementation of the [TradingAgents](https://arxiv.org/abs/2412.20138) research concept, designed to run natively inside GitHub Copilot, Claude Code, or any MCP-compatible AI coding assistant.
+> This is a clean-room reimplementation of the [TradingAgents](https://arxiv.org/abs/2412.20138) research concept, designed to run natively inside any MCP-compatible AI coding assistant.
 
 ---
 
@@ -25,6 +25,9 @@ Phase 3 — Trading Decision
 Phase 4 — Risk Debate
   Aggressive ←→ Conservative ←→ Neutral (N rounds)
   └── Portfolio Manager → Buy/Overweight/Hold/Underweight/Sell
+        ↓
+Phase 5 — DOCX Report
+  Full analysis saved as {TICKER}_analysis_{DATE}.docx
 ```
 
 ---
@@ -46,34 +49,59 @@ cp .env.example .env
 
 ### 3. Register MCP servers
 
-**VS Code / GitHub Copilot:**
-The `.vscode/mcp.json` file is already configured. Open this folder in VS Code with the Copilot extension — MCP servers are auto-registered.
+#### GitHub Copilot (VS Code)
 
-**Claude Code:**
-Add to your `claude_desktop_config.json`:
+The `.vscode/mcp.json` file is already configured. Open this folder in VS Code with the GitHub Copilot extension — MCP servers are auto-registered.
+
+The orchestration instructions live in `.github/copilot-instructions.md` and are automatically loaded by Copilot. Sub-agents are in `.github/agents/`.
+
+#### Claude Code
+
+The `.mcp.json` file at the repository root is automatically loaded by Claude Code. The orchestration instructions live in `CLAUDE.md` and sub-agents are in `.claude/agents/`.
+
+To add the MCP servers globally instead, add them to `~/.claude/claude_desktop_config.json`:
+
 ```json
 {
   "mcpServers": {
     "trading-market-data": {
       "command": "python3",
-      "args": ["/path/to/trading-agents-copilot/mcp/market-data-server.py"]
+      "args": ["/path/to/trading-agents-swarm/mcp/market-data-server.py"]
     },
     "trading-news-data": {
       "command": "python3",
-      "args": ["/path/to/trading-agents-copilot/mcp/news-data-server.py"]
+      "args": ["/path/to/trading-agents-swarm/mcp/news-data-server.py"]
     }
   }
 }
 ```
 
-**Codex / OpenAI:**
-Register each MCP server via the OpenAI plugin manifest or your tool configuration.
+#### OpenAI Codex
+
+The orchestration instructions live in `AGENTS.md` and are automatically loaded by Codex. Sub-agents are in `.github/agents/`.
+
+Register the MCP servers in your Codex configuration:
+
+```json
+{
+  "mcpServers": {
+    "trading-market-data": {
+      "command": "python3",
+      "args": ["./mcp/market-data-server.py"]
+    },
+    "trading-news-data": {
+      "command": "python3",
+      "args": ["./mcp/news-data-server.py"]
+    }
+  }
+}
+```
 
 ---
 
 ## Usage
 
-Once MCP servers are running and Copilot has the instruction file loaded, simply ask:
+Once the MCP servers are registered, simply ask your AI assistant:
 
 ```
 Analyze AAPL for today
@@ -88,26 +116,45 @@ Run a full trading analysis on TSLA for 2024-11-15
 Give me a trading recommendation for SHOP.TO
 ```
 
-Copilot will automatically run the full 4-phase pipeline using the skills and MCP tools.
+The assistant will automatically run the full 4-phase pipeline and generate a DOCX report.
+
+---
+
+## Architecture
+
+| File / Directory | Purpose |
+|---|---|
+| `.github/copilot-instructions.md` | Orchestrator instructions for GitHub Copilot |
+| `.github/agents/*.md` | Sub-agent prompts for GitHub Copilot |
+| `CLAUDE.md` | Orchestrator instructions for Claude Code |
+| `.claude/agents/*.md` | Sub-agent prompts for Claude Code |
+| `AGENTS.md` | Orchestrator instructions for OpenAI Codex |
+| `mcp/market-data-server.py` | MCP server for stock prices, indicators, and fundamentals |
+| `mcp/news-data-server.py` | MCP server for news and insider transactions |
+| `.vscode/mcp.json` | MCP server registration for VS Code / GitHub Copilot |
+| `.mcp.json` | MCP server registration for Claude Code |
+| `requirements.txt` | Python dependencies for MCP servers |
 
 ---
 
 ## Sub-Agents Reference
 
-| File | Phase | Role |
-|------|-------|------|
-| `.claude/agents/market-analyst.md` | Phase 1 | Technical indicators analysis |
-| `.claude/agents/sentiment-analyst.md` | Phase 1 | Social media & news sentiment |
-| `.claude/agents/news-analyst.md` | Phase 1 | Global macro news analysis |
-| `.claude/agents/fundamentals-analyst.md` | Phase 1 | Financial statements analysis |
-| `.claude/agents/bull-researcher.md` | Phase 2 | Argues the bullish case |
-| `.claude/agents/bear-researcher.md` | Phase 2 | Argues the bearish case |
-| `.claude/agents/research-manager.md` | Phase 2 | Judges debate → investment plan |
-| `.claude/agents/trader.md` | Phase 3 | Final BUY/HOLD/SELL decision |
-| `.claude/agents/aggressive-analyst.md` | Phase 4 | Champions high-risk/high-reward |
-| `.claude/agents/conservative-analyst.md` | Phase 4 | Champions capital preservation |
-| `.claude/agents/neutral-analyst.md` | Phase 4 | Balanced risk/reward perspective |
-| `.claude/agents/portfolio-manager.md` | Phase 4 | Final 5-tier rating decision |
+Each sub-agent has a mirrored file in `.github/agents/` (Copilot / Codex) and `.claude/agents/` (Claude Code).
+
+| Agent | Phase | Role |
+|-------|-------|------|
+| `market-analyst` | Phase 1 | Technical indicators analysis |
+| `sentiment-analyst` | Phase 1 | Social media & news sentiment |
+| `news-analyst` | Phase 1 | Global macro news analysis |
+| `fundamentals-analyst` | Phase 1 | Financial statements analysis |
+| `bull-researcher` | Phase 2 | Argues the bullish case |
+| `bear-researcher` | Phase 2 | Argues the bearish case |
+| `research-manager` | Phase 2 | Judges debate → investment plan |
+| `trader` | Phase 3 | Final BUY/HOLD/SELL decision |
+| `aggressive-analyst` | Phase 4 | Champions high-risk/high-reward |
+| `conservative-analyst` | Phase 4 | Champions capital preservation |
+| `neutral-analyst` | Phase 4 | Balanced risk/reward perspective |
+| `portfolio-manager` | Phase 4 | Final 5-tier rating decision |
 
 ---
 
@@ -118,9 +165,9 @@ Copilot will automatically run the full 4-phase pipeline using the skills and MC
 | Tool | Description |
 |------|-------------|
 | `get_stock_data(symbol, start_date, end_date)` | OHLCV price data |
-| `get_indicators(symbol, indicator, curr_date, look_back_days)` | Technical indicators (rsi, macd, macdh, macds, boll, boll_ub, boll_lb, atr, vwma, close_50_sma, close_200_sma, close_10_ema) |
+| `get_indicators(symbol, indicator, curr_date, look_back_days)` | Technical indicators — call once per indicator: `rsi`, `macd`, `macdh`, `macds`, `boll`, `boll_ub`, `boll_lb`, `atr`, `vwma`, `close_50_sma`, `close_200_sma`, `close_10_ema` |
 | `get_fundamentals(ticker, curr_date)` | Company overview & valuation ratios |
-| `get_balance_sheet(ticker, freq, curr_date)` | Balance sheet |
+| `get_balance_sheet(ticker, freq, curr_date)` | Balance sheet (annual or quarterly) |
 | `get_cashflow(ticker, freq, curr_date)` | Cash flow statement |
 | `get_income_statement(ticker, freq, curr_date)` | Income statement |
 
@@ -137,14 +184,15 @@ Copilot will automatically run the full 4-phase pipeline using the skills and MC
 ## Data Sources
 
 - **yfinance** (default, free, no API key needed) — stock prices, indicators, fundamentals, news
-- **Alpha Vantage** (optional, free tier available) — higher quality news sentiment, 50+ indicators
+- **Alpha Vantage** (optional, free tier available) — higher quality news sentiment; set `ALPHA_VANTAGE_API_KEY` in `.env`
 
 ---
 
 ## Supported Tickers
 
 Any ticker supported by yfinance, including:
-- US stocks: `AAPL`, `TSLA`, `NVDA`
+- US stocks: `AAPL`, `TSLA`, `NVDA`, `MSFT`
+- Chinese A-shares: `601012.SS`, `600519.SS`
 - Canadian: `SHOP.TO`, `RY.TO`
 - Japanese: `9984.T`, `7203.T`
 - UK: `HSBA.L`, `BP.L`
@@ -156,14 +204,14 @@ Always preserve the exchange suffix in your query.
 
 ## Customizing the Pipeline
 
-**Change debate rounds:** Edit `.github/copilot-instructions.md` — find `debate_rounds` (default: 2) and `risk_rounds` (default: 2).
+**Change debate rounds:** Edit the orchestrator instructions file for your tool — find `debate_rounds` (default: 2) and `risk_rounds` (default: 2).
 
-**Swap data vendor:** Set `ALPHA_VANTAGE_API_KEY` in your `.env` — the MCP servers automatically prefer Alpha Vantage when the key is present, falling back to yfinance.
+**Swap data vendor:** Set `ALPHA_VANTAGE_API_KEY` in `.env` — the MCP servers automatically prefer Alpha Vantage when the key is present, falling back to yfinance.
 
-**Add a new analyst:** Create a new sub-agent file in `.claude/agents/` and add it to the pipeline in `.github/copilot-instructions.md`.
+**Add a new analyst:** Create new sub-agent files in `.github/agents/` and `.claude/agents/`, then wire the new agent into the pipeline in all three orchestrator files.
 
 ---
 
 ## Credits
 
-Inspired by the [TradingAgents](https://arxiv.org/abs/2412.20138) research paper (arXiv:2412.20138). This is a ground-up reimplementation as a Copilot-native plugin — no LangChain dependency.
+Inspired by the [TradingAgents](https://arxiv.org/abs/2412.20138) research paper (arXiv:2412.20138). This is a ground-up reimplementation as a native AI assistant plugin — no LangChain dependency.

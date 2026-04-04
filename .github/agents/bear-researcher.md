@@ -1,3 +1,7 @@
+---
+name: bear-researcher
+description: Bear Researcher
+---
 # Skill: Bear Researcher
 
 ## Role

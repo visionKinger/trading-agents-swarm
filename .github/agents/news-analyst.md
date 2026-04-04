@@ -1,3 +1,7 @@
+---
+name: news-analyst
+description: News Analyst
+---
 # Skill: News Analyst
 
 ## Role
