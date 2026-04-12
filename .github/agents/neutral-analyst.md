@@ -1,3 +1,7 @@
+---
+name: neutral-analyst
+description: Neutral Risk Analyst
+---
 # Skill: Neutral Risk Analyst
 
 ## Role

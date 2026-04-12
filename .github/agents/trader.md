@@ -1,3 +1,7 @@
+---
+name: trader
+description: Trader
+---
 # Skill: Trader
 
 ## Role

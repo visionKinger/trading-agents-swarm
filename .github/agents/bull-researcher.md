@@ -1,3 +1,7 @@
+---
+name: bull-researcher
+description: Bull Researcher
+---
 # Skill: Bull Researcher
 
 ## Role

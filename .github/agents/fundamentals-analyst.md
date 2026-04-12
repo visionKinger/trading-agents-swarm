@@ -1,3 +1,7 @@
+---
+name: fundamentals-analyst
+description: Fundamentals Analyst
+---
 # Skill: Fundamentals Analyst
 
 ## Role
