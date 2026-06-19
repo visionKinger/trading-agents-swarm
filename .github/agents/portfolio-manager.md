@@ -1,3 +1,7 @@
+---
+name: portfolio-manager
+description: Portfolio Manager
+---
 # Skill: Portfolio Manager
 
 ## Role

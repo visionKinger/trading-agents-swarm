@@ -1,3 +1,7 @@
+---
+name: research-manager
+description: Research Manager
+---
 # Skill: Research Manager
 
 ## Role

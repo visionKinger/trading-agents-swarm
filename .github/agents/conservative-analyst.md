@@ -1,3 +1,7 @@
+---
+name: conservative-analyst
+description: Conservative Risk Analyst
+---
 # Skill: Conservative Risk Analyst
 
 ## Role

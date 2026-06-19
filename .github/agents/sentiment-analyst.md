@@ -1,3 +1,7 @@
+---
+name: sentiment-analyst
+description: Sentiment Analyst
+---
 # Skill: Sentiment Analyst
 
 ## Role
